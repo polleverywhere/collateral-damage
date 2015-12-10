@@ -1,0 +1,19 @@
+{
+  "name": "visual-regression",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "coffee index.coffee"
+  },
+  "author": "Steel Fu <steelfu@gmail.com>",
+  "dependencies": {
+    "bluebird": "^3.0.6",
+    "coffee-script": "^1.10.0",
+    "electron-prebuilt": "^0.35.0",
+    "nightmare": "^2.0.8",
+    "promise-queue": "^2.2.0",
+    "resemblejs": "^2.0.1",
+    "urijs": "^1.17.0"
+  }
+}
