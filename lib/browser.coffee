@@ -6,23 +6,22 @@ URI             = require "urijs"
 NativeImage     = require("electron").nativeImage
 mkdirp          = require "mkdirp"
 
-VIEWPORT_WIDTH    = parseInt(process.env.WIDTH) || 1024
-VIEWPORT_HEIGHT   = parseInt(process.env.HEIGHT) || 768
 DEBUG_MODE        = process.env.DEBUG_MODE == "true"
 
 results = []
 queue = new Queue(1, Infinity)
 
 outputPath = path.join(__dirname, "../tmp/diffs")
+scenariosPath = path.join(__dirname, "../scenarios")
 
 mkdirp outputPath
 
 printLogs = ->
   results.forEach (data) ->
     image = NativeImage.createFromDataURL(data.imageDataURL)
-    console.log "writing file", data.name
 
-    fs.writeFile path.join(outputPath, "#{data.name}.jpg"), image.toJpeg(50)
+    console.log "#{data.name}: #{data.misMatchPercentage}% difference"
+    fs.writeFile path.join(outputPath, "#{data.name}-diff.jpg"), image.toJpeg(50)
 
 quit = ->
   app.quit()
@@ -30,9 +29,15 @@ quit = ->
 app.on "ready", ->
   app.dock?.hide()
 
-  queue.add ->
-    require("../scenarios/homepage.coffee")().then (data) ->
-      results.push data
+  # read every scenario
+  fs.readdirSync(scenariosPath).forEach (file) ->
+    pathname = path.join(scenariosPath, file)
+
+    console.log "Adding scenario: #{file}"
+
+    queue.add ->
+      require(pathname)().then (data) ->
+        results.push data
 
   queue.add printLogs
   queue.add quit
