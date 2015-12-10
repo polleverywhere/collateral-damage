@@ -1,12 +1,18 @@
-ipc = require("electron").ipcMain
+ipc             = require("electron").ipcMain
 Promise         = require "bluebird"
 BrowserWindow   = require "browser-window"
 path            = require "path"
 NativeImage     = require("electron").nativeImage
+fs              = require "fs"
 
 VIEWPORT_WIDTH    = parseInt(process.env.WIDTH) || 1024
-VIEWPORT_HEIGHT   = parseInt(process.env.HEIGHT) || 768
+VIEWPORT_HEIGHT   = parseInt(process.env.HEIGHT) || 1200
 DEBUG_MODE        = process.env.DEBUG_MODE == "true"
+
+name = ->
+  filename = path.basename __filename
+  ext = path.extname filename
+  filename.replace ext, ""
 
 createWindow = (opts = {}) ->
   new BrowserWindow
@@ -22,8 +28,8 @@ createWindow = (opts = {}) ->
       overlayScrollbars: true
       nodeIntegration: false
 
-exampleImage = ->
-  NativeImage.createFromPath path.join(__dirname, "../examples/homepage.png")
+originalImage = ->
+  NativeImage.createFromPath path.join(__dirname, "../originals/#{name()}.png")
 
 compareImage = (window, image1, image2) ->
   new Promise (resolve, reject) ->
@@ -44,23 +50,22 @@ capturePage = (window, url) ->
     window.webContents.once "did-finish-load", ->
       window.webContents.once "did-finish-load", ->
         window.capturePage (data) ->
+          saveImage(data.toJpeg(50))
           resolve(data)
 
       window.webContents.executeJavaScript '$("#header-pricing-link").get(0).click()'
 
-name = ->
-  filename = path.basename __filename
-  ext = path.extname filename
-  filename.replace ext, ""
+saveImage = (data) ->
+  filepath = path.join(__dirname, "../tmp/diffs/#{name()}.jpg")
+  fs.writeFile filepath, data
 
 module.exports = ->
   new Promise (resolve, reject) ->
     window = createWindow()
 
-    capturePage(window, "http:/www.polleverywhere.com").then (image) ->
-      compareImage(window, image, exampleImage()).then (results) ->
+    capturePage(window, "http://www.polleverywhere.com").then (image) ->
+      compareImage(window, image, originalImage()).then (results) ->
 
         results.name = name()
-        results.description = "homepage diff test"
 
         resolve(results)

@@ -14,3 +14,8 @@
                         (` ^'"`-' ")
                         
 Perceptual Difference Testing
+
+## Running tests
+
+    $ npm install
+    $ npm run server
