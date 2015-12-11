@@ -21,7 +21,7 @@ printLogs = ->
     image = NativeImage.createFromDataURL(data.imageDataURL)
 
     console.log "#{data.name}: #{data.misMatchPercentage}% difference"
-    fs.writeFile path.join(outputPath, "#{data.name}-diff.jpg"), image.toJpeg(50)
+    fs.writeFile path.join(outputPath, "#{data.name}-diff.png"), image.toPng()
 
 quit = ->
   app.quit()
