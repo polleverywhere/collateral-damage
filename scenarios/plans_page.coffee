@@ -9,6 +9,9 @@ VIEWPORT_WIDTH    = parseInt(process.env.WIDTH) || 1024
 VIEWPORT_HEIGHT   = parseInt(process.env.HEIGHT) || 1200
 DEBUG_MODE        = process.env.DEBUG_MODE == "true"
 
+originalsPath = path.join(__dirname, "../originals")
+diffsPath = path.join(__dirname, "../tmp/diffs")
+
 name = ->
   filename = path.basename __filename
   ext = path.extname filename
@@ -28,8 +31,11 @@ createWindow = (opts = {}) ->
       overlayScrollbars: true
       nodeIntegration: false
 
+imageName = ->
+  "#{name()}.png"
+
 originalImage = ->
-  NativeImage.createFromPath path.join(__dirname, "../originals/#{name()}.png")
+  NativeImage.createFromPath path.join(originalsPath, imageName())
 
 compareImage = (window, image1, image2) ->
   new Promise (resolve, reject) ->
@@ -50,13 +56,13 @@ capturePage = (window, url) ->
     window.webContents.once "did-finish-load", ->
       window.webContents.once "did-finish-load", ->
         window.capturePage (data) ->
-          saveImage(data.toJpeg(50))
+          saveImage(data.toPng())
           resolve(data)
 
       window.webContents.executeJavaScript '$("#header-pricing-link").get(0).click()'
 
 saveImage = (data) ->
-  filepath = path.join(__dirname, "../tmp/diffs/#{name()}.jpg")
+  filepath = path.join(diffsPath, imageName())
   fs.writeFile filepath, data
 
 module.exports = ->
