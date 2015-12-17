@@ -1,6 +1,5 @@
 ipc             = require("electron").ipcMain
 Promise         = require "bluebird"
-BrowserWindow   = require "browser-window"
 path            = require "path"
 NativeImage     = require("electron").nativeImage
 fs              = require "fs"
@@ -8,13 +7,16 @@ _               = require "lodash"
 
 module.exports =
   class Scenario
-    constructor: ->
+    constructor: (options = {}) ->
+      @window = options.window
+
       @originalsPath = path.join(__dirname, "../originals")
       @diffsPath = path.join(__dirname, "../tmp/diffs")
 
       # allow each scenario to override these
-      @viewportWidth    = parseInt(process.env.WIDTH) || 1024
-      @viewportHeight   = parseInt(process.env.HEIGHT) || 1200
+      @viewportWidth    = parseInt(process.env.VIEWPORT_WIDTH)
+      @viewportHeight   = parseInt(process.env.VIEWPORT_HEIGHT)
+
       @misMatchThreshold = parseFloat(process.env.MISMATCH_THRESHOLD)
 
       @debugMode = process.env.DEBUG_MODE == "true"
@@ -22,39 +24,40 @@ module.exports =
     name: =>
       _.snakeCase @constructor.name
 
-    window: (opts = {}) =>
-      new BrowserWindow
-        x: 0
-        y: 0
-        width: @viewportWidth
-        height: @viewportHeight
-        show: @debugMode
-        frame: false
-        webPreferences:
-          preload: path.join(__dirname, "../lib/preload.js")
-          webSecurity: false
-          overlayScrollbars: true
-          nodeIntegration: false
+    setSize: =>
+      @window.setSize @viewportWidth, @viewportHeight
 
     imageName: =>
       "#{@name()}.png"
 
-    originalImage: =>
-      NativeImage.createFromPath path.join(@originalsPath, @imageName())
+    executeJavaScript: (func) =>
+      # regex = /^function\s*\(\){(.*)}$/m
+      # functionContent = func.toString().match(regex)?[1]
+      functionContent = "eval(" + func.toString().replace(/\n/g, "") + "())"
+      console.log "executing #{functionContent}"
+      @window.webContents.executeJavaScript functionContent
 
-    compareImage: (window, image1, image2) =>
+    originalImage: =>
+      filePath = path.join(@originalsPath, @imageName())
+      if fs.existsSync(filePath)
+        NativeImage.createFromPath filePath
+      else
+        null
+
+    compareImage: (image1, image2) =>
       new Promise (resolve, reject) =>
         ipc.once "compare-results", (event, results, dataUrl) =>
-          window.close()
-
           @saveDiffImage NativeImage.createFromDataURL(dataUrl).toPng()
           results.misMatchThreshold = @misMatchThreshold
           results.misMatchPercentage = parseFloat(results.misMatchPercentage)
           results.failure = @isFailure(results.misMatchPercentage)
 
+          if results.failure
+            results.message = "Threshold exceeds: #{results.misMatchThreshold}"
+
           resolve(results)
 
-        window.webContents.send "compare", image1.toDataUrl(), image2.toDataUrl()
+        @window.webContents.send "compare", image1.toDataUrl(), image2.toDataUrl()
 
     saveImage: (data, path) =>
       fs.writeFile path, data
