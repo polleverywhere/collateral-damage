@@ -1,18 +1,7 @@
 # Collateral Damage
 
-                             ____
-                     __,-~~/~    `---.
-                   _/_,---(      ,    )
-               __ /        <    /   )  \___
-- ------===;;;'====------------------===;;;===----- -  -
-                  \/  ~"~"~"~"~"~\~"~)~"/
-                  (_ (   \  (     >    \)
-                   \_( _ <         >_>'
-                      ~ `-i' ::>|--"
-                          I;|.|.|
-                         <|i::|i|`.
-                        (` ^'"`-' ")
-                        
+![](http://cdn.dstv.com/mms.dstv.com/content/images/dstv/201011/lg/bom_collateral_damage.jpg)
+
 Perceptual Difference Testing
 
 ## Running tests
