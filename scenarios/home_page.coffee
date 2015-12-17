@@ -2,7 +2,7 @@ Promise         = require "bluebird"
 Scenario        = require "../lib/scenario"
 
 module.exports =
-  class PlansPage extends Scenario
+  class HomePage extends Scenario
     capturePage: (window, url) =>
       new Promise (resolve, reject) =>
         window.webContents.loadURL url
@@ -11,12 +11,9 @@ module.exports =
           reject()
 
         window.webContents.once "did-finish-load", =>
-          window.webContents.once "did-finish-load", =>
-            window.capturePage (data) =>
-              @saveScreenshot(data.toPng())
-              resolve(data)
-
-          window.webContents.executeJavaScript '$("#header-pricing-link").get(0).click()'
+          window.capturePage (data) =>
+            @saveScreenshot(data.toPng())
+            resolve(data)
 
     run: =>
       console.log "running #{@constructor.name} scenario"
