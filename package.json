@@ -1,6 +1,6 @@
 {
   "name": "collateral-damage",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,6 +13,7 @@
     "electron-prebuilt": "^0.35.0",
     "lodash": "^3.10.1",
     "mkdirp": "^0.5.1",
+    "nightmare": "^2.0.9",
     "promise-queue": "^2.2.0",
     "resemblejs": "^2.0.1",
     "urijs": "^1.17.0",

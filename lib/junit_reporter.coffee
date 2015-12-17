@@ -16,10 +16,11 @@ module.exports =
       xmlwriter.startElement("testcase")
         .writeAttribute("name", result.name)
         .writeAttribute("mismatch", result.misMatchPercentage)
+        .writeAttribute("time", result.analysisTime)
 
       if result.failure
         xmlwriter.startElement("failure")
-          .writeAttribute("message", "Threshold exceeds: #{result.misMatchThreshold}")
+          .writeAttribute("message", result.message)
           .endElement()
 
       xmlwriter.endElement()
