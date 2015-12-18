@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server": "coffee index.coffee"
+    "damage-report": "coffee index.coffee"
   },
   "author": "Steel Fu <steelfu@gmail.com>",
   "dependencies": {
