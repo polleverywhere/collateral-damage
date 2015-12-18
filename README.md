@@ -13,16 +13,16 @@ Perceptual Difference Testing
 
 ### File structure
     
-    |-- static_pages.json (static page configuration)
-    |-- custom_scenarios (scripts for interactive pages)
-        |-- ...
+    ├── static_pages.json (static page configuration)
+    ├── custom_scenarios (scripts for interactive pages)
+    |   ├── ...
     |
-    |-- originals (images used for diff testing)
-        |-- custom (images for interactive pages)
-            |-- ...
+    ├── originals (images used for diff testing)
+        ├── custom (images for interactive pages)
+        |   ├── ...
         |
-        |-- static (images for static pages)
-            |-- ...
+        ├── static (images for static pages)
+            ├── ...
 
 ### Static pages
 
