@@ -18,11 +18,11 @@ Perceptual Difference Testing
     |   ├── ...
     |
     ├── originals (images used for diff testing)
-        ├── custom (images for interactive pages)
-        |   ├── ...
-        |
-        ├── static (images for static pages)
-            ├── ...
+    |   ├── custom (images for interactive pages)
+    |   |   ├── ...
+    |   |
+    |   ├── static (images for static pages)
+    |   |   ├── ...
 
 ### Static pages
 
