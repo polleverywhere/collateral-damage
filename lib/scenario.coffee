@@ -8,14 +8,14 @@ _               = require "lodash"
 module.exports =
   class Scenario
     constructor: (options = {}) ->
-      {@window, @config} = options
+      {@window, @config, @page} = options
 
       @originalsPath = path.join(__dirname, "../originals")
       @diffsPath = path.join(__dirname, "../tmp/diffs")
 
       # allow each scenario to override these
-      @viewportWidth = @config.viewportWidth
-      @viewportHeight = @config.viewportHeight
+      @viewportWidth = @page?.width || @config.viewportWidth
+      @viewportHeight = @page?.height || @config.viewportHeight
 
       @misMatchThreshold = @config.misMatchThreshold
 
@@ -46,7 +46,20 @@ module.exports =
       new Promise (resolve, reject) =>
         console.log "Comparing image"
 
+        compareError = (event, error) ->
+          console.log "Error processing comparison"
+          console.log error
+
+          results =
+            failure: true
+            message: error
+
+          console.log "Processed result:", results
+          resolve(results)
+
         ipc.once "compare-results", (event, results, dataUrl) =>
+          ipc.removeListener "compare-error", compareError
+
           console.log "Received image comparison"
 
           @saveDiffImage NativeImage.createFromDataURL(dataUrl).toPng()
@@ -60,16 +73,7 @@ module.exports =
           console.log "Processed result:", results
           resolve(results)
 
-        ipc.once "compare-error", (event, error) =>
-          console.log "Error processing comparison"
-          console.log error
-
-          results =
-            failure: true
-            message: error
-
-          console.log "Processed result:", results
-          resolve(results)
+        ipc.once "compare-error", compareError
 
         @window.webContents.send "compare", image1.toDataUrl(), image2.toDataUrl()
 

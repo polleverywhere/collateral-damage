@@ -13,7 +13,6 @@ module.exports =
   rootUrl: "http://localhost:5000"
 
   staticPages:
-    "/": "Homepage"
     "/plans": "Business monthly plans"
     "/plans#annual": "Business annual plans"
     "/plans/higher-ed": "Higher-ed plans"
@@ -27,6 +26,6 @@ module.exports =
     "/edu-guide": "Edu guide"
     "/professional-support": "Professional support"
 
-  customScenarios: [
+  interactivePages: [
     "navigate_to_plans_page.coffee"
   ]

@@ -2,7 +2,7 @@ module.exports =
   # Debug mode currently shows the window on the desktop
   debug: false
 
-  # window content sizes
+  # default window content sizes
   viewportWidth: 1024
   viewportHeight: 5000
 
@@ -13,20 +13,46 @@ module.exports =
   rootUrl: "https://www.polleverywhere.com"
 
   staticPages:
-    # "/": "Homepage"
-    "/plans": "Business monthly plans"
-    "/plans#annual": "Business annual plans"
-    "/plans/higher-ed": "Higher-ed plans"
-    "/plans/k-12": "K12 plans page"
-    "/how-it-works": "How it works"
-    "/features": "Features"
-    "/app": "PollEv Presenter"
-    "/app/google-slides": "Google Presenter"
-    "/faq": "FAQ"
-    "/guide": "Guide"
-    "/edu-guide": "Edu guide"
-    "/professional-support": "Professional support"
+    "/plans":
+      desc: "Business monthly plans"
+      height: 2000
 
-  customScenarios: [
+    "/plans#annual":
+      desc: "Business annual plans"
+      height: 2000
+
+    "/plans/higher-ed":
+      desc: "Higher-ed plans"
+      height: 3000
+
+    "/plans/k-12":
+      desc: "K12 plans page"
+      height: 2500
+
+    "/how-it-works": "How it works"
+    "/features":
+      desc: "Features"
+      height: 10000
+
+    "/app":
+      desc: "PollEv Presenter"
+      height: 4000
+
+    "/app/google-slides":
+      desc: "Google Presenter"
+      height: 3000
+
+    # "/faq": "FAQ"
+
+    "/guide": "User guide"
+    "/edu-guide":
+      desc: "Edu guide"
+      height: 5000
+
+    "/professional-support":
+      desc: "Professional support"
+      height: 1000
+
+  interactivePages: [
     "navigate_to_plans_page.coffee"
   ]
