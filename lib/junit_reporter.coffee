@@ -16,7 +16,7 @@ module.exports =
       xmlwriter.startElement("testcase")
         .writeAttribute("name", result.name)
         .writeAttribute("mismatch", result.misMatchPercentage)
-        .writeAttribute("time", result.analysisTime)
+        .writeAttribute("time", result.analysisTime / 1000)
 
       if result.failure
         xmlwriter.startElement("failure")
@@ -54,4 +54,4 @@ module.exports =
       for result in @results
         time += result.analysisTime
 
-      time
+      time / 1000
