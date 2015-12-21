@@ -11,7 +11,7 @@ module.exports =
 
       @originalsPath = path.join(__dirname, "../originals/static")
 
-      {@url, @desc} = options
+      {@url} = options
 
 
     capturePage: (url) =>
@@ -32,10 +32,12 @@ module.exports =
             resolve(data)
 
     name: =>
-      _.snakeCase @desc
+      _.snakeCase @page.desc
 
     run: =>
-      console.log "Running static page: #{@desc || @url}"
+      @setSize()
+
+      console.log "Running static page: #{@page.desc || @url}"
       new Promise (resolve, reject) =>
         @capturePage(@url)
           .then (image) =>

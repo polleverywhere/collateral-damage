@@ -18,7 +18,7 @@ _.defaults config,
   viewportHeight: 5000
   misMatchThreshold: 1
   staticPages: {}
-  customScenarios: []
+  interactivePages: []
 
 console.log config
 
@@ -26,7 +26,7 @@ results = []
 queue = new Queue(1, Infinity)
 
 outputPath = path.join(__dirname, "../tmp/diffs")
-customScenariosPath = path.join(__dirname, "../custom_scenarios")
+interactivePagesPath = path.join(__dirname, "../interactive_pages")
 
 createWindow = ->
   window = new BrowserWindow
@@ -59,33 +59,39 @@ printLogs = ->
     # console.log "#{data.name}: #{data.misMatchPercentage}% difference"
 
 writeJunitXML = ->
-  console.log "writing junit xml"
   new JunitReporter(results).writeTo path.join(outputPath, "report.xml")
 
-customScenarios = (window) ->
+interactivePages = (window) ->
   # read every scenario
-  for file in config.customScenarios
+  for file in config.interactivePages
     do (file) ->
-      pathname = path.join(customScenariosPath, file)
+      pathname = path.join(interactivePagesPath, file)
 
-      console.log "Queueing custom scenario: #{pathname}"
+      console.log "Queueing interactive page: #{pathname}"
       queue.add ->
         clazz = require(pathname)
         scenario = new clazz(window: window, config: config)
-        scenario.run().then (data) ->
-          results.push data
+
+        scenario.run()
+          .then (data) ->
+            results.push data
 
 staticPages = (window) ->
-  for p, desc of config.staticPages
-    do (p, desc) ->
+  for p, opts of config.staticPages
+    do (p, opts) ->
       # allows us to use hashes and other url elements
       uri = URI(p).origin(config.rootUrl)
-      console.log "Queueing static page: #{uri.toString()}, #{desc}"
+
+      if _.isString(opts)
+        opts =
+          desc: opts
+
+      console.log "Queueing static page: #{uri.toString()}, #{opts.desc}"
 
       queue.add ->
         page = new StaticPage
           url: uri.toString()
-          desc: desc
+          page: opts
           window: window
           config: config
 
@@ -101,7 +107,7 @@ app.on "ready", ->
   window = createWindow()
 
   staticPages(window)
-  customScenarios(window)
+  interactivePages(window)
 
   queue.add printLogs
   queue.add writeJunitXML
