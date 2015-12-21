@@ -13,18 +13,45 @@ module.exports =
   rootUrl: "http://localhost:5000"
 
   staticPages:
-    "/plans": "Business monthly plans"
-    "/plans#annual": "Business annual plans"
-    "/plans/higher-ed": "Higher-ed plans"
-    "/plans/k-12": "K12 plans page"
+    "/plans":
+      desc: "Business monthly plans"
+      height: 2000
+
+    "/plans#annual":
+      desc: "Business annual plans"
+      height: 2000
+
+    "/plans/higher-ed":
+      desc: "Higher-ed plans"
+      height: 3000
+
+    "/plans/k-12":
+      desc: "K12 plans page"
+      height: 2500
+
     "/how-it-works": "How it works"
-    "/features": "Features"
-    "/app": "PollEv Presenter"
-    "/app/google-slides": "Google Presenter"
-    "/faq": "FAQ"
-    "/guide": "Guide"
-    "/edu-guide": "Edu guide"
-    "/professional-support": "Professional support"
+    "/features":
+      desc: "Features"
+      height: 10000
+
+    "/app":
+      desc: "PollEv Presenter"
+      height: 4000
+
+    "/app/google-slides":
+      desc: "Google Presenter"
+      height: 3000
+
+    # "/faq": "FAQ"
+
+    "/guide": "User guide"
+    "/edu-guide":
+      desc: "Edu guide"
+      height: 5000
+
+    "/professional-support":
+      desc: "Professional support"
+      height: 1000
 
   interactivePages: [
     "navigate_to_plans_page.coffee"
