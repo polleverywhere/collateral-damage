@@ -54,5 +54,5 @@ module.exports =
       height: 1000
 
   interactivePages: [
-    "navigate_to_plans_page.coffee"
+    "navigate_to_plans_page"
   ]

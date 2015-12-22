@@ -10,7 +10,7 @@ module.exports =
     constructor: (options = {}) ->
       {@window, @config, @page} = options
 
-      @originalsPath = path.join(__dirname, "../originals")
+      @baselinesPath = path.join(__dirname, "../baselines")
       @diffsPath = path.join(__dirname, "../tmp/diffs")
 
       # allow each scenario to override these
@@ -36,7 +36,7 @@ module.exports =
       @window.webContents.executeJavaScript functionContent
 
     originalImage: =>
-      filePath = path.join(@originalsPath, @imageName())
+      filePath = path.join(@baselinesPath, @imageName())
       if fs.existsSync(filePath)
         NativeImage.createFromPath filePath
       else
