@@ -9,6 +9,14 @@ Perceptual Difference Testing
     $ npm install
     $ npm run damage-report <config_name>
 
+## Resetting baseline images
+
+    npm run reset-static <config_name> <static_page_path>
+    npm run reset-static <config_name> --all
+
+    npm run reset-interactive <config_name> <interactive_page_file.coffee>
+    npm run reset-interactive <config_name> --all
+
 ## Configuration
 
 ### Config files
@@ -24,17 +32,22 @@ Options:
     viewportHeight: 5000
     misMatchThreshold: 1
     rootUrl: "https://www.polleverywhere.com"
-    staticPages: {"/": "Homepage"}
-    customScenarios: ["file names in ./custom_scenarios"]
+    staticPages:
+      "/": "Homepage"
+      "/another_path": 
+        desc: "Another path"
+        width: 2000
+        height: 3000
+    interactivePages: ["file names in ./interactive_pages"]
 
 ### File structure
     
-    ├── static_pages.json (static page configuration)
-    ├── custom_scenarios (scripts for interactive pages)
+    ├── collateral_damage.config.<config_name>.coffee (config file)
+    ├── interactive_pages (scripts for interactive pages)
     |   ├── ...
     |
-    ├── originals (images used for diff testing)
-    |   ├── custom (images for interactive pages)
+    ├── baselines (baseline images used for visual comparison)
+    |   ├── interactive (images for interactive pages)
     |   |   ├── ...
     |   |
     |   ├── static (images for static pages)
@@ -42,11 +55,11 @@ Options:
 
 ### Static pages
 
-These are pages that do not need any interaction. The browser will navigate to this page and take a screenshot. You need to add a cooresponding base screenshot at `/originals/static`
+These are pages that do not need any interaction. The browser will navigate to this page and take a screenshot. You need to add a cooresponding base screenshot at `/baselines/static`
 
-### Custom scenarios
+### Interactive pages
 
-These are scripts that interact with a page and then takes a screenshot. `/custom_scenarios/navigate_to_plans_page.coffee` is an example of how to perform actions on a page and take a screenshot. You will need to add a cooresponding screenshot at `/originals/custom`
+These are scripts that interact with a page and then takes a screenshot. `/interactive_pages/navigate_to_plans_page.coffee` is an example of how to perform actions on a page and take a screenshot. You will need to add a cooresponding baseline image at `/baselines/interactive`
 
 ## Output
 
