@@ -23,6 +23,7 @@ module.exports =
       _.snakeCase @constructor.name
 
     setSize: =>
+      console.log "Setting viewport size to #{@viewportWidth}x#{@viewportHeight}"
       @window.setSize @viewportWidth, @viewportHeight
 
     imageName: =>
@@ -35,12 +36,26 @@ module.exports =
       console.log "executing #{functionContent}"
       @window.webContents.executeJavaScript functionContent
 
-    originalImage: =>
+    baselineImage: =>
       filePath = path.join(@baselinesPath, @imageName())
       if fs.existsSync(filePath)
         NativeImage.createFromPath filePath
       else
         null
+
+    compareToBaseline: (image) =>
+      new Promise (resolve, reject) =>
+        if @config.mode != "reset"
+          if (oImage = @baselineImage())
+            console.log "Preparing for comparison"
+            @compareImage(image, oImage).then (results) =>
+              results.name = @name()
+              resolve(results)
+          else
+            console.log "Could not find baseline image"
+            resolve(name: @name(), failure: true, analysisTime: 0, message: "Baseline image not found")
+        else
+          resolve("Reset baseline image for #{@name()}")
 
     compareImage: (image1, image2) =>
       new Promise (resolve, reject) =>
@@ -84,7 +99,13 @@ module.exports =
       @saveImage data, path.join(@diffsPath, "#{@name()}-diff.png")
 
     saveScreenshot: (data) =>
-      @saveImage data, path.join(@diffsPath, "#{@name()}.png")
+      # save screenshot to baseline path if in reset mode
+      outputPath = if @config.mode == "reset"
+        @baselinesPath
+      else
+        @diffsPath
+
+      @saveImage data, path.join(outputPath, "#{@name()}.png")
 
     isFailure: (percentage) =>
       percentage > @misMatchThreshold

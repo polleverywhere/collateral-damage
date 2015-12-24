@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "damage-report": "coffee index.coffee",
-    "reset-static": "coffee reset.coffee",
-    "reset-interactive": "coffee reset.coffee"
+    "damage-report": "coffee index.coffee report",
+    "reset": "coffee index.coffee reset"
   },
   "author": "Steel Fu <steelfu@gmail.com>",
   "dependencies": {
@@ -14,6 +13,7 @@
     "coffee-script": "^1.10.0",
     "electron-prebuilt": "^0.35.0",
     "lodash": "^3.10.1",
+    "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "nightmare": "^2.0.9",
     "promise-queue": "^2.2.0",
