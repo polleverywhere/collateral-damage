@@ -64,7 +64,10 @@ module.exports =
         @interactivePages()
 
         @queue.add @printLogs
-        @queue.add @writeJunitXML
+
+        if @config.mode == "report"
+          @queue.add @writeJunitXML
+
         @queue.add =>
           @window.close()
           app.quit()

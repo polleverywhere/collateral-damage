@@ -16,13 +16,4 @@ module.exports =
 
       console.log "Running interactive page: #{@name()}"
       new Promise (resolve, reject) =>
-        @capturePage()
-          .then (image) =>
-            if (oImage = @originalImage())
-              console.log "Preparing for comparison"
-              @compareImage(image, oImage).then (results) =>
-                results.name = @name()
-                resolve(results)
-            else
-              console.log "could not find screenshot"
-              resolve(name: @name(), failure: true, analysisTime: 0, message: "Original image not found")
+        @capturePage(@url).then(@compareToBaseline).then(resolve)

@@ -11,11 +11,17 @@ Perceptual Difference Testing
 
 ## Resetting baseline images
 
-    npm run reset-static <config_name> <static_page_path>
-    npm run reset-static <config_name> --all
+    # Reset all static baseline images
+    npm run reset <config_name> static
 
-    npm run reset-interactive <config_name> <interactive_page_file.coffee>
-    npm run reset-interactive <config_name> --all
+    # Reset specific static page
+    npm run reset <config_name> static -- --page=<static_page_path e.g. /plans>
+    
+    # Reset all interactive baseline images
+    npm run reset <config_name> interactive
+
+    # Reset specific interactive page    
+    npm run reset <config_name> interactive -- --page=<interactive_page_file>
 
 ## Configuration
 
