@@ -7,7 +7,7 @@ module.exports =
   class Homepage extends InteractivePage
     constructor: (options = {}) ->
       options.page =
-        height: 3500
+        height: 2600
 
       super(options)
 
@@ -27,6 +27,9 @@ module.exports =
 
             # Remove viz
             $(".device--laptop iframe").remove()
+
+            # Remove carousel
+            $(".carousel-slider").remove()
 
           setTimeout =>
             @window.capturePage (data) =>

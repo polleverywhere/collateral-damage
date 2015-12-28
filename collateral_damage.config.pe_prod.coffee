@@ -55,4 +55,5 @@ module.exports =
 
   interactivePages: [
     "navigate_to_plans_page"
+    "homepage"
   ]
