@@ -23,13 +23,9 @@ module.exports =
         @window.webContents.once "did-finish-load", =>
           @executeJavaScript ->
             # Remove animating background
-            $(".hero-media video").remove()
-
             # Remove viz
-            $(".device--laptop iframe").remove()
-
             # Remove carousel
-            $(".carousel-slider").remove()
+            $(".hero-media video, .device--laptop iframe, .carousel-slider").remove()
 
           setTimeout =>
             @window.capturePage (data) =>
