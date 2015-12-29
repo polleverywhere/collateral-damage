@@ -17,18 +17,16 @@ module.exports =
       new Promise (resolve, reject) =>
         @window.webContents.loadURL url
 
-        @window.webContents.once "did-fail-load", (event, code, desc) ->
-          reject()
-
-        @window.webContents.once "did-finish-load", =>
+        @window.webContents.once "dom-ready", =>
           @executeJavaScript ->
-            # Remove animating background
             # Remove viz
+            # Remove animating background
             # Remove carousel
-            $(".hero-media video, .device--laptop iframe, .carousel-slider").remove()
+            $(".device--laptop iframe, .hero-media video, .carousel-slider").remove()
 
-          setTimeout =>
-            @window.capturePage (data) =>
-              @saveScreenshot(data.toPng())
-              resolve(data)
-          , 1000
+          .then =>
+            setTimeout =>
+              @window.capturePage (data) =>
+                @saveScreenshot(data.toPng())
+                resolve(data)
+            , 1000

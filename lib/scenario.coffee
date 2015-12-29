@@ -30,11 +30,22 @@ module.exports =
       "#{@name()}.png"
 
     executeJavaScript: (func) =>
-      # regex = /^function\s*\(\){(.*)}$/m
-      # functionContent = func.toString().match(regex)?[1]
-      functionContent = "eval(" + func.toString().replace(/\n/g, "") + "())"
-      console.log "executing #{functionContent}"
-      @window.webContents.executeJavaScript functionContent
+      functionContent = func.toString().replace(/\n/g, "")
+
+      new Promise (resolve, reject) =>
+        console.log "executing JS"
+        @window.webContents.send "exec-js", functionContent
+
+        success = (event) ->
+          ipc.removeListener "exec-js-error", error
+          resolve()
+
+        error = (event, message) ->
+          ipc.removeListener "exec-js-success", success
+          reject(message)
+
+        ipc.once "exec-js-success", success
+        ipc.once "exec-js-error", error
 
     baselineImage: =>
       filePath = path.join(@baselinesPath, @imageName())
