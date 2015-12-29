@@ -4,32 +4,66 @@
 
 Perceptual Difference Testing
 
-## Running tests
+## Installation
 
-    $ npm install
-    $ npm run damage-report <config_name>
+    $ npm install @polleverywhere/collateral-damage --save
 
-## Resetting baseline images
+## Commandline Interface
+
+    $ ./node_modules/collateral-damage
+
+Mucking with paths is gross. Take advantage of NPM Scripts by including these in your projects `package.json` file:
+
+    "scripts": {
+      "report": "collateral-damage report",
+      "reset": "collateral-damage reset"
+    },
+
+[NPM Script](https://docs.npmjs.com/misc/scripts) will do all the paths magic for you so you can just execute:
+
+    $ npm run collateral-damage-report
+    $ npm run collateral-damage-reset
+
+### Generating the diff images and junit xml report
+    
+    $ npm run collateral-damage-report report <config_name>
+
+### Resetting baseline images
 
     # Reset all static baseline images
-    npm run reset <config_name> static
+    $ npm run collateral-damage-reset <config_name> static
 
     # Reset specific static page
-    npm run reset <config_name> static -- --page=<static_page_path e.g. /plans>
+    $ npm run collateral-damage-reset <config_name> static -- --page=<static_page_path e.g. /plans>
     
     # Reset all interactive baseline images
-    npm run reset <config_name> interactive
+    $ npm run collateral-damage-reset <config_name> interactive
 
     # Reset specific interactive page    
-    npm run reset <config_name> interactive -- --page=<interactive_page_file>
+    $ npm run collateral-damage-reset <config_name> interactive -- --page=<interactive_page_file>
 
-## Configuration
+## Configuration in your project
+
+### File structure
+    
+    Your project root
+    |
+    ├── collateral_damage.config.<config_name>.coffee (config file)
+    ├── interactive_pages (scripts for interactive pages)
+    |   ├── ...
+    |
+    ├── baselines (baseline images used for visual comparison)
+    |   ├── interactive (images for interactive pages)
+    |   |   ├── ...
+    |   |
+    |   ├── static (images for static pages)
+    |   |   ├── ...
 
 ### Config files
 
-Files must be named `collateral_damage.config.<config_name>.coffee`
+They should be named `collateral_damage.config.<config_name>.coffee`
 
-e.g. `collateral_damage.config.pe_prod.coffee`
+e.g. `collateral_damage.config.production.coffee`
 
 Options:
 
@@ -46,18 +80,6 @@ Options:
         height: 3000
     interactivePages: ["file names in ./interactive_pages"]
 
-### File structure
-    
-    ├── collateral_damage.config.<config_name>.coffee (config file)
-    ├── interactive_pages (scripts for interactive pages)
-    |   ├── ...
-    |
-    ├── baselines (baseline images used for visual comparison)
-    |   ├── interactive (images for interactive pages)
-    |   |   ├── ...
-    |   |
-    |   ├── static (images for static pages)
-    |   |   ├── ...
 
 ### Static pages
 
@@ -69,7 +91,7 @@ These are scripts that interact with a page and then takes a screenshot. `/inter
 
 ## Output
 
-Every page will generate a screenshot image and a cooresponding diff image. These files are located in `/tmp/diffs`. The files are named like this:
+Every page will generate a screenshot image and a cooresponding diff image. These files are located in `<project-root>/tmp/collateral-damage`. The files are named like this:
 
     faq-diff.png
     faq.png
@@ -78,18 +100,3 @@ Every page will generate a screenshot image and a cooresponding diff image. Thes
     ...
     report.xml (JUnit format)
 
-## Running in Docker (Not yet working in Ubuntu)
-
-### Generate diff report
-
-1. Build the docker image:
-
-  `docker build -t collateral_damage --file=docker/Dockerfile .`
-
-2. Run it in a Docker container and have it output the diffs in `./tmp`
-
-  `docker run --name damage_report -it -v $(pwd)/tmp:/app/tmp collateral_damage npm run damage-report <config_name>`
-
-3. Clean up the container for future use:
-
-  `docker rm damage_report`

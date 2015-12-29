@@ -5,7 +5,7 @@ _             = require "lodash"
 
 args   = parseArgs process.argv.slice(2)
 
-config  = require path.join(__dirname, "../collateral_damage.config.#{args._[1]}")
+config  = require path.join(process.cwd(), "collateral_damage.config.#{args._[1]}")
 config["mode"] = args._[0]
 pageType = args._[2]
 options = args
@@ -18,7 +18,6 @@ if config["mode"] == "reset"
     # the page passed in
     if options.page?
       config.staticPages = _.pick config.staticPages, options.page
-
 
   else if pageType == "interactive"
     config.staticPages = {}
