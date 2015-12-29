@@ -9,7 +9,7 @@ module.exports =
     constructor: (options = {}) ->
       super
 
-      @baselinesPath = path.join(__dirname, "../baselines/static")
+      @baselinesPath = path.join(process.cwd(), "./baselines/static")
 
       {@url} = options
 

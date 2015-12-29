@@ -10,8 +10,8 @@ module.exports =
     constructor: (options = {}) ->
       {@window, @config, @page} = options
 
-      @baselinesPath = path.join(__dirname, "../baselines")
-      @diffsPath = path.join(__dirname, "../tmp/diffs")
+      @baselinesPath = path.join(process.cwd(), "./baselines")
+      @outputPath = path.join(process.cwd(), "./tmp/collateral-damage")
 
       # allow each scenario to override these
       @viewportWidth = @page?.width || @config.viewportWidth
@@ -107,14 +107,14 @@ module.exports =
       fs.writeFile path, data
 
     saveDiffImage: (data) =>
-      @saveImage data, path.join(@diffsPath, "#{@name()}-diff.png")
+      @saveImage data, path.join(@outputPath, "#{@name()}-diff.png")
 
     saveScreenshot: (data) =>
       # save screenshot to baseline path if in reset mode
       outputPath = if @config.mode == "reset"
         @baselinesPath
       else
-        @diffsPath
+        @outputPath
 
       @saveImage data, path.join(outputPath, "#{@name()}.png")
 

@@ -28,8 +28,8 @@ module.exports =
       @results = []
       @queue = new Queue(1, Infinity)
 
-      @outputPath = path.join(__dirname, "../tmp/diffs")
-      @interactivePagesPath = path.join(__dirname, "../interactive_pages")
+      @outputPath = path.join(process.cwd(), "./tmp/collateral-damage")
+      @interactivePagesPath = path.join(process.cwd(), "./interactive_pages")
 
     createWindow: =>
       window = new BrowserWindow

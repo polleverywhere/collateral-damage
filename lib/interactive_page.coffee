@@ -9,7 +9,7 @@ module.exports =
     constructor: (options = {}) ->
       super
 
-      @baselinesPath = path.join(__dirname, "../baselines/interactive")
+      @baselinesPath = path.join(process.cwd(), "./baselines/interactive")
 
     run: =>
       @setSize()

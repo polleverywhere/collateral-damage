@@ -1,11 +1,14 @@
 {
-  "name": "collateral-damage",
+  "name": "@polleverywhere/collateral-damage",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "damage-report": "coffee index.coffee report",
-    "reset": "coffee index.coffee reset"
+  "main": "./lib/index",
+  "bin": {
+    "collateral-damage": "./bin/collateral-damage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/polleverywhere/collateral-damage.git"
   },
   "author": "Steel Fu <steelfu@gmail.com>",
   "dependencies": {
