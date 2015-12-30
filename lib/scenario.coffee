@@ -22,9 +22,17 @@ module.exports =
     name: =>
       _.snakeCase @constructor.name
 
+    scaleFactor: =>
+      @_scaleFactor ||=  require("screen").getPrimaryDisplay().scaleFactor
+
     setSize: =>
-      console.log "Setting viewport size to #{@viewportWidth}x#{@viewportHeight}"
-      @window.setSize @viewportWidth, @viewportHeight
+      width = @viewportWidth / @scaleFactor()
+      height = @viewportHeight / @scaleFactor()
+
+      console.log "Detected scale factor: #{@scaleFactor()}"
+      console.log "Setting viewport size to #{width}x#{height}"
+
+      @window.setSize width, height
 
     imageName: =>
       "#{@name()}.png"
