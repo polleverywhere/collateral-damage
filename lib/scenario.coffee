@@ -47,6 +47,26 @@ module.exports =
         ipc.once "exec-js-success", success
         ipc.once "exec-js-error", error
 
+    waitForSelector: (selector) =>
+      new Promise (resolve, reject) =>
+        unless selector?
+          resolve()
+          return
+
+        console.log "waiting for css", selector
+        @window.webContents.send "wait-for-selector", selector
+
+        success = (selector) ->
+          ipc.removeListener "wait-for-selector-error", error
+          resolve()
+
+        error = (selector, message) ->
+          ipc.removeListener "wait-for-selector-success", success
+          reject(message)
+
+        ipc.once "wait-for-selector-success", success
+        ipc.once "wait-for-selector-error", error
+
     baselineImage: =>
       filePath = path.join(@baselinesPath, @imageName())
       if fs.existsSync(filePath)
@@ -72,7 +92,9 @@ module.exports =
       new Promise (resolve, reject) =>
         console.log "Comparing image"
 
-        compareError = (event, error) ->
+        error = (event, error) ->
+          ipc.removeListener "compare-error", success
+
           console.log "Error processing comparison"
           console.log error
 
@@ -83,8 +105,8 @@ module.exports =
           console.log "Processed result:", results
           resolve(results)
 
-        ipc.once "compare-results", (event, results, dataUrl) =>
-          ipc.removeListener "compare-error", compareError
+        success = (event, results, dataUrl) =>
+          ipc.removeListener "compare-error", error
 
           console.log "Received image comparison"
 
@@ -99,7 +121,8 @@ module.exports =
           console.log "Processed result:", results
           resolve(results)
 
-        ipc.once "compare-error", compareError
+        ipc.once "compare-results", success
+        ipc.once "compare-error", error
 
         @window.webContents.send "compare", image1.toDataUrl(), image2.toDataUrl()
 
@@ -109,14 +132,14 @@ module.exports =
     saveDiffImage: (data) =>
       @saveImage data, path.join(@outputPath, "#{@name()}-diff.png")
 
-    saveScreenshot: (data) =>
+    saveScreenshot: (image) =>
       # save screenshot to baseline path if in reset mode
       outputPath = if @config.mode == "reset"
         @baselinesPath
       else
         @outputPath
 
-      @saveImage data, path.join(outputPath, "#{@name()}.png")
+      @saveImage image.toPng(), path.join(outputPath, "#{@name()}.png")
 
     isFailure: (percentage) =>
       percentage > @misMatchThreshold

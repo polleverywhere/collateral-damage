@@ -78,6 +78,8 @@ Options:
         desc: "Another path"
         width: 2000
         height: 3000
+        waitForSelector: "css selector to wait for before capturing page"
+        delay: 500 # Millisecond delay before capturing the page
     interactivePages: ["file names in ./interactive_pages"]
 
 
@@ -89,6 +91,29 @@ These are pages that do not need any interaction. The browser will navigate to t
 
 These are scripts that interact with a page and then takes a screenshot. `/interactive_pages/navigate_to_plans_page.coffee` is an example of how to perform actions on a page and take a screenshot. You will need to add a cooresponding baseline image at `/baselines/interactive`
 
+You need to extend the base `InteractivePage` class and implement `capturePage`
+
+Example: 
+
+    Promise          = require "bluebird"
+    InteractivePage  = require("@polleverywhere/collateral-damage").InteractivePage
+
+    module.exports =
+      class YourScenario extends InteractivePage
+        capturePage: (url) =>
+          new Promise (resolve, reject) =>
+            # Load the page
+            @window.webContents.loadURL url
+
+            @window.webContents.once "did-finish-load", =>    
+              # Perform the actual page capture
+              @window.capturePage (data) =>
+                # Save screenshot method will automatically name 
+                # the file #based on the class name and write a 
+                # PNG image to the baselines directory
+                @saveScreenshot(data)
+                resolve(data)
+        
 ## Output
 
 Every page will generate a screenshot image and a cooresponding diff image. These files are located in `<project-root>/tmp/collateral-damage`. The files are named like this:

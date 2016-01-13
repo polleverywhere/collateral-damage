@@ -11,6 +11,9 @@ module.exports =
 
       @baselinesPath = path.join(process.cwd(), "./baselines/interactive")
 
+    capturePage: (url) =>
+      Promise.reject "You need to implement the capturePage method to handle #{url}"
+
     run: =>
       @setSize()
 
