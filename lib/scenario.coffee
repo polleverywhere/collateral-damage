@@ -5,6 +5,8 @@ NativeImage     = require("electron").nativeImage
 fs              = require "fs"
 _               = require "lodash"
 
+COMPARISON_TIMEOUT = 30000
+
 module.exports =
   class Scenario
     constructor: (options = {}) ->
@@ -79,7 +81,7 @@ module.exports =
         if @config.mode != "reset"
           if (oImage = @baselineImage())
             console.log "Preparing for comparison"
-            @compareImage(image, oImage).timeout(5000).then (results) =>
+            @compareImage(image, oImage).timeout(COMPARISON_TIMEOUT).then (results) =>
               results.name = @name()
               resolve(results)
           else
