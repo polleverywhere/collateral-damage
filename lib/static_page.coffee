@@ -11,23 +11,30 @@ module.exports =
 
       @baselinesPath = path.join(process.cwd(), "./baselines/static")
 
-      {@url} = options
-
+      {@url, @page} = options
 
     capturePage: (url) =>
       new Promise (resolve, reject) =>
         @window.webContents.loadURL url
 
-        loadFailure = (event, code, desc) ->
+        failure = (event, code, desc) =>
+          @window.webContents.removeListener "did-finish-load", success
           reject("#{event} #{code} #{desc}")
 
-        @window.webContents.on "did-fail-load", loadFailure
+        success = =>
+          @window.webContents.removeListener "did-fail-load", failure
 
-        @window.webContents.once "did-finish-load", =>
-          @window.webContents.removeListener "did-fail-load", loadFailure
-          @window.capturePage (data) =>
-            @saveScreenshot(data.toPng())
-            resolve(data)
+          capture = =>
+            @window.capturePage (image) =>
+              @saveScreenshot(image)
+              resolve(image)
+
+          @waitForSelector(@page.waitForSelector)
+            .delay(@page.delay || 0)
+            .then(capture)
+
+        @window.webContents.once "did-fail-load", failure
+        @window.webContents.once "did-finish-load", success
 
     name: =>
       _.snakeCase @page.desc
