@@ -79,7 +79,7 @@ module.exports =
         if @config.mode != "reset"
           if (oImage = @baselineImage())
             console.log "Preparing for comparison"
-            @compareImage(image, oImage).then (results) =>
+            @compareImage(image, oImage).timeout(5000).then (results) =>
               results.name = @name()
               resolve(results)
           else
