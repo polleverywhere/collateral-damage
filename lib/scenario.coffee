@@ -81,9 +81,14 @@ module.exports =
         if @config.mode != "reset"
           if (oImage = @baselineImage())
             console.log "Preparing for comparison"
-            @compareImage(image, oImage).timeout(COMPARISON_TIMEOUT).then (results) =>
-              results.name = @name()
-              resolve(results)
+            @compareImage(image, oImage)
+              .then (results) =>
+                results.name = @name()
+                resolve(results)
+              .catch Promise.TimeoutError, (e) =>
+                resolve(name: @name(), failure: true, message: e.message, analysisTime: e.timeout)
+              .catch (e) =>
+                resolve(name: @name(), failure: true, message: e.message)
           else
             console.log "Could not find baseline image"
             resolve(name: @name(), failure: true, analysisTime: 0, message: "Baseline image not found")
@@ -94,8 +99,9 @@ module.exports =
       new Promise (resolve, reject) =>
         console.log "Comparing image"
 
+
         error = (event, error) ->
-          ipc.removeListener "compare-error", success
+          ipc.removeListener "compare-success", success
 
           console.log "Error processing comparison"
           console.log error
@@ -123,8 +129,18 @@ module.exports =
           console.log "Processed result:", results
           resolve(results)
 
-        ipc.once "compare-results", success
+        ipc.once "compare-success", success
         ipc.once "compare-error", error
+
+        setTimeout =>
+          ipc.removeListener "compare-error", error
+          ipc.removeListener "compare-success", success
+
+          error = new Promise.TimeoutError("Exceeded time performing comparison")
+          error.timeout = COMPARISON_TIMEOUT
+          reject(error)
+
+        , COMPARISON_TIMEOUT
 
         @window.webContents.send "compare", image1.toDataUrl(), image2.toDataUrl()
 
