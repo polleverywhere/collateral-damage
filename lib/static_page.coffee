@@ -44,4 +44,4 @@ module.exports =
 
       console.log "Running static page: #{@page.desc || @url}"
       new Promise (resolve, reject) =>
-        @capturePage(@url).then(@compareToBaseline).then(resolve)
+        @capturePage(@url).then(@compareToBaseline).then(resolve).catch(reject)
