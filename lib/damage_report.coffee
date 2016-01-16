@@ -90,13 +90,24 @@ module.exports =
       # read every scenario
       for file in @config.interactivePages
         do (file) =>
+          page = file
+          file = file.file if _.isObject(file)
+
           pathname = path.join(@interactivePagesPath, file)
 
           console.log "Queueing interactive page: #{pathname}"
           @queue.add =>
             clazz = require(pathname)
-            scenario = new clazz(window: @window, config: @config)
 
+            opts =
+              window: @window
+              config: @config
+              page: {}
+
+            if _.isObject(page)
+              _.extend opts.page, page
+
+            scenario = new clazz(opts)
             scenario.run()
               .then (data) =>
                 @results.push data
