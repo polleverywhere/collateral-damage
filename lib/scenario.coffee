@@ -171,6 +171,14 @@ module.exports =
 
     loadUrl: (url) =>
       new Promise (resolve, reject) =>
+        failure = (event, code, desc) =>
+          @window.webContents.removeListener "did-finish-load", success
+          reject("#{event} #{code} #{desc}")
+
+        success = =>
+          @window.webContents.removeListener "did-fail-load", failure
+
+        @window.webContents.once "did-fail-load", reject
         @window.webContents.once "did-finish-load", resolve
         @window.webContents.loadURL url
 
