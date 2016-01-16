@@ -22,7 +22,10 @@ module.exports =
       @misMatchThreshold = @config.misMatchThreshold
 
     name: =>
-      _.snakeCase @constructor.name
+      if @page.desc?
+        _.snakeCase @page.desc
+      else
+        _.snakeCase @constructor.name
 
     setSize: =>
       console.log "Setting viewport size to #{@viewportWidth}x#{@viewportHeight}"
@@ -161,3 +164,18 @@ module.exports =
 
     isFailure: (percentage) =>
       percentage > @misMatchThreshold
+
+    clearCookies: =>
+      new Promise (resolve, reject) =>
+        @window.webContents.session.clearStorageData storages: ["cookies"], resolve
+
+    loadUrl: (url) =>
+      new Promise (resolve, reject) =>
+        @window.webContents.once "did-finish-load", resolve
+        @window.webContents.loadURL url
+
+    takeScreenshot: =>
+      new Promise (resolve, reject) =>
+        @window.capturePage (data) =>
+          @saveScreenshot(data)
+          resolve(data)

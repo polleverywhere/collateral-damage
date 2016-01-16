@@ -36,12 +36,14 @@ module.exports =
         @window.webContents.once "did-fail-load", failure
         @window.webContents.once "did-finish-load", success
 
-    name: =>
-      _.snakeCase @page.desc
-
     run: =>
       @setSize()
 
       console.log "Running static page: #{@page.desc || @url}"
       new Promise (resolve, reject) =>
-        @capturePage(@url).then(@compareToBaseline).then(resolve).catch(reject)
+        @clearCookies()
+          .then =>
+            @capturePage(@url)
+          .then(@compareToBaseline)
+          .then(resolve)
+          .catch(reject)

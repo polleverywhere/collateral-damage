@@ -19,4 +19,9 @@ module.exports =
 
       console.log "Running interactive page: #{@name()}"
       new Promise (resolve, reject) =>
-        @capturePage(@url).then(@compareToBaseline).then(resolve)
+        @clearCookies()
+          .then =>
+            @capturePage(@url)
+          .then(@compareToBaseline)
+          .then(resolve)
+          .catch(reject)
