@@ -15,26 +15,12 @@ module.exports =
 
     capturePage: (url) =>
       new Promise (resolve, reject) =>
-        @window.webContents.loadURL url
-
-        failure = (event, code, desc) =>
-          @window.webContents.removeListener "did-finish-load", success
-          reject("#{event} #{code} #{desc}")
-
-        success = =>
-          @window.webContents.removeListener "did-fail-load", failure
-
-          capture = =>
-            @window.capturePage (image) =>
-              @saveScreenshot(image)
-              resolve(image)
-
-          @waitForSelector(@page.waitForSelector)
-            .delay(@page.delay || 0)
-            .then(capture)
-
-        @window.webContents.once "did-fail-load", failure
-        @window.webContents.once "did-finish-load", success
+        @loadUrl(url)
+          .then =>
+            @waitForSelector(@page.waitForSelector)
+          .delay(@page.delay || 0)
+          .then(@takeScreenshot)
+          .then(resolve)
 
     run: =>
       @setSize()
