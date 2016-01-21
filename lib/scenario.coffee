@@ -6,6 +6,7 @@ fs              = require "fs"
 _               = require "lodash"
 
 COMPARISON_TIMEOUT = 30000
+WAIT_FOR_CSS_TIMEOUT = 20000
 
 module.exports =
   class Scenario
@@ -72,6 +73,16 @@ module.exports =
         ipc.once "wait-for-selector-success", success
         ipc.once "wait-for-selector-error", error
 
+        setTimeout ->
+          ipc.removeListener "wait-for-selector-success", success
+          ipc.removeListener "wait-for-selector-error", error
+
+          error = new Promise.TimeoutError("Exceeded time waiting for css")
+          error.timeout = WAIT_FOR_CSS_TIMEOUT
+          reject(error)
+
+        , WAIT_FOR_CSS_TIMEOUT
+
     baselineImage: =>
       filePath = path.join(@baselinesPath, @imageName())
       if fs.existsSync(filePath)
@@ -135,7 +146,7 @@ module.exports =
         ipc.once "compare-success", success
         ipc.once "compare-error", error
 
-        setTimeout =>
+        setTimeout ->
           ipc.removeListener "compare-error", error
           ipc.removeListener "compare-success", success
 
