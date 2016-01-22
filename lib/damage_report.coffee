@@ -109,6 +109,8 @@ module.exports =
 
             scenario = new clazz(opts)
             scenario.run()
+              .then (data) =>
+                @results.push data
               .catch (data) =>
                 @results.push data
 
@@ -132,5 +134,7 @@ module.exports =
               config: @config
 
             page.run()
+              .then (data) =>
+                @results.push data
               .catch (data) =>
                 @results.push data
