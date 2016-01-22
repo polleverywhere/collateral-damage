@@ -6,7 +6,7 @@ fs              = require "fs"
 _               = require "lodash"
 
 COMPARISON_TIMEOUT = 30000
-WAIT_FOR_CSS_TIMEOUT = 20000
+WAIT_FOR_LOAD_TIMEOUT = 15000
 
 module.exports =
   class Scenario
@@ -62,26 +62,22 @@ module.exports =
         console.log "waiting for css", selector
         @window.webContents.send "wait-for-selector", selector
 
-        success = (selector) ->
-          ipc.removeListener "wait-for-selector-error", error
-          resolve()
+        success = (event, targetSelector) ->
+          if selector == targetSelector
+            removeListeners()
+            resolve()
 
-        error = (selector, message) ->
+        error = (event, targetSelector, message, timeout) =>
+          if selector == targetSelector
+            removeListeners()
+            reject @buildError(message: message, analysisTime: timeout)
+
+        removeListeners = ->
           ipc.removeListener "wait-for-selector-success", success
-          reject(message)
-
-        ipc.once "wait-for-selector-success", success
-        ipc.once "wait-for-selector-error", error
-
-        setTimeout ->
-          ipc.removeListener "wait-for-selector-success", success
           ipc.removeListener "wait-for-selector-error", error
 
-          error = new Promise.TimeoutError("Exceeded time waiting for css")
-          error.timeout = WAIT_FOR_CSS_TIMEOUT
-          reject(error)
-
-        , WAIT_FOR_CSS_TIMEOUT
+        ipc.on "wait-for-selector-success", success
+        ipc.on "wait-for-selector-error", error
 
     baselineImage: =>
       filePath = path.join(@baselinesPath, @imageName())
@@ -89,6 +85,12 @@ module.exports =
         NativeImage.createFromPath filePath
       else
         null
+
+    buildError: (opts = {}) =>
+      _.defaults opts,
+        name: @name()
+        failure: true
+        analysisTime: 0
 
     compareToBaseline: (image) =>
       new Promise (resolve, reject) =>
@@ -100,9 +102,9 @@ module.exports =
                 results.name = @name()
                 resolve(results)
               .catch Promise.TimeoutError, (e) =>
-                resolve(name: @name(), failure: true, message: e.message, analysisTime: e.timeout)
+                resolve @buildError(message: e.message, analysisTime: e.timeout)
               .catch (e) =>
-                resolve(name: @name(), failure: true, message: e.message)
+                resolve @buildError(message: e.message)
           else
             console.log "Could not find baseline image"
             resolve(name: @name(), failure: true, analysisTime: 0, message: "Baseline image not found")
