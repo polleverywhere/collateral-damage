@@ -180,7 +180,7 @@ module.exports =
 
     clearCookies: =>
       new Promise (resolve, reject) =>
-        @window.webContents.session.clearStorageData storages: ["cookies"], resolve
+        @window.webContents.session.clearStorageData storages: ["cookies", "localstorage"], resolve
 
     loadUrl: (url) =>
       new Promise (resolve, reject) =>
