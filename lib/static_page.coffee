@@ -21,6 +21,7 @@ module.exports =
           .delay(@page.delay || 0)
           .then(@takeScreenshot)
           .then(resolve)
+          .catch(reject)
 
     run: =>
       @setSize()
