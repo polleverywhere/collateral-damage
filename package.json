@@ -20,7 +20,7 @@
     "mkdirp": "^0.5.1",
     "nightmare": "^2.0.9",
     "promise-queue": "^2.2.0",
-    "resemblejs": "^2.0.1",
+    "resemblejs": "^2.2.0",
     "rimraf": "^2.4.4",
     "urijs": "^1.17.0",
     "xml-writer": "^1.6.0"
