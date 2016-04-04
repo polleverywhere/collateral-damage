@@ -52,25 +52,32 @@ module.exports =
 
       window
 
+    _onReady: =>
+      console.log "Electron is ready, running..."
+      app.dock?.hide()
+
+      @setup()
+
+      @window = @createWindow()
+
+      @staticPages()
+      @interactivePages()
+
+      @queue.add @printLogs
+
+      if @config.mode == "report"
+        @queue.add @writeJunitXML
+
+      @queue.add =>
+        @window.close()
+        app.quit()
+
     run: =>
-      app.on "ready", =>
-        app.dock?.hide()
-
-        @setup()
-
-        @window = @createWindow()
-
-        @staticPages()
-        @interactivePages()
-
-        @queue.add @printLogs
-
-        if @config.mode == "report"
-          @queue.add @writeJunitXML
-
-        @queue.add =>
-          @window.close()
-          app.quit()
+      if app.isReady()
+        @_onReady()
+      else
+        console.log "Waiting for electron..."
+        app.on "ready", @_onReady
 
     setup: =>
       # delete the directory to remove files
