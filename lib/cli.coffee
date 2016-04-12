@@ -5,6 +5,7 @@ path = require "path"
 appPath = path.join(__dirname, "./app.js")
 args = process.argv.slice(2)
 args.splice(0, 0, appPath)
+args.push("--enable-logging")
 
 module.exports = ->
   if process.platform == "linux"
