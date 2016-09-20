@@ -28,9 +28,9 @@ module.exports =
       else
         _.snakeCase @constructor.name
 
-    setSize: =>
-      console.log "Setting viewport size to #{@viewportWidth}x#{@viewportHeight}"
-      @window.setSize @viewportWidth, @viewportHeight
+    setSize: (width, height) =>
+      console.log "Setting viewport size to #{width}x#{height}"
+      @window.setSize width, height
 
     imageName: =>
       "#{@name()}.png"
@@ -40,11 +40,10 @@ module.exports =
 
       new Promise (resolve, reject) =>
         console.log "executing JS"
-        @window.webContents.send "exec-js", functionContent
 
-        success = (event) ->
+        success = (event, ret) ->
           ipc.removeListener "exec-js-error", error
-          resolve()
+          resolve(ret)
 
         error = (event, message) ->
           ipc.removeListener "exec-js-success", success
@@ -52,6 +51,13 @@ module.exports =
 
         ipc.once "exec-js-success", success
         ipc.once "exec-js-error", error
+
+        @window.webContents.send "exec-js", functionContent
+
+    getCurrentSize: =>
+      @executeJavaScript ->
+        width: document.body.scrollWidth
+        height: document.body.scrollHeight
 
     waitForSelector: (selector) =>
       new Promise (resolve, reject) =>
@@ -190,9 +196,10 @@ module.exports =
 
         success = =>
           @window.webContents.removeListener "did-fail-load", failure
+          resolve()
 
-        @window.webContents.once "did-fail-load", reject
-        @window.webContents.once "did-finish-load", resolve
+        @window.webContents.once "did-fail-load", failure
+        @window.webContents.once "did-finish-load", success
         @window.webContents.loadURL url
 
     takeScreenshot: =>

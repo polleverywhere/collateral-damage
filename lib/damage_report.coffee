@@ -1,4 +1,3 @@
-app             = require "app"
 path            = require "path"
 fs              = require "fs"
 Queue           = require "promise-queue"
@@ -8,7 +7,7 @@ mkdirp          = require "mkdirp"
 rimraf          = require "rimraf"
 JunitReporter   = require "./junit_reporter"
 StaticPage      = require "./static_page"
-BrowserWindow   = require "browser-window"
+{app, BrowserWindow} = require "electron"
 _               = require "lodash"
 
 module.exports =
@@ -17,9 +16,10 @@ module.exports =
       {@config} = options
 
       _.defaults @config,
-        viewportWidth: 1024
+        viewportWidth: 1400
         viewportHeight: 5000
         misMatchThreshold: 1
+        delay: 0
         staticPages: {}
         interactivePages: []
 
@@ -59,6 +59,7 @@ module.exports =
       @setup()
 
       @window = @createWindow()
+      @window.setAspectRatio(16/9)
 
       @staticPages()
       @interactivePages()

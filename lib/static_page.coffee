@@ -11,21 +11,26 @@ module.exports =
 
       @baselinesPath = path.join(process.cwd(), "./baselines/static")
 
-      {@url, @page} = options
+      {@url, @page, @config} = options
 
     capturePage: (url) =>
+      @window.setSize @viewportWidth, @viewportHeight
       new Promise (resolve, reject) =>
         @loadUrl(url)
           .then =>
             @waitForSelector(@page.waitForSelector)
-          .delay(@page.delay || 0)
+          .delay(@page.delay || @config.delay)
+          .then =>
+            @getCurrentSize().then (size) =>
+              @setSize(size.width, size.height)
+          .delay(1000)
           .then(@takeScreenshot)
           .then(resolve)
-          .catch(reject)
+          .catch ->
+            console.log arguments
+            reject arguments
 
     run: =>
-      @setSize()
-
       console.log "Running static page: #{@page.desc || @url}"
       new Promise (resolve, reject) =>
         @clearCookies()
